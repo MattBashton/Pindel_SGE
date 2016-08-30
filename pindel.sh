@@ -4,6 +4,9 @@
 #$ -l h_rt=480:00:00
 #$ -l h_vmem=38G
 
+# Matthew Bashton 2016
+# Script for running pindel on the cluster as a SGE array.
+
 set -o pipefail
 hostname
 date
@@ -13,7 +16,8 @@ module add apps/htslib/1.3.1
 
 DEST=$PWD
 BED="regions.bed"
-G_NAME="IGG"
+G_NAME="RUN"
+REF="/opt/databases/GATK_bundle/2.8/hg19/ucsc.hg19.fasta"
 
 LIST="config.txt"
 LINE=`awk "NR==$SGE_TASK_ID" $LIST`
@@ -32,6 +36,7 @@ echo " - INSERT_SIZE = $INSERT_SIZE"
 echo " - SAMP_ID = $SAMP_ID"
 echo " - PWD = $PWD"
 echo " - LIST = $LIST"
+echo " - REF = $REF"
 
 echo "Copying input $B_NAME* to $TMPDIR"
 /usr/bin/time --verbose cp -v $B_NAME.bam $TMPDIR
@@ -47,15 +52,14 @@ cd $TMPDIR
 echo "Check on files before running"
 ls -lh
 
-REF="/opt/databases/GATK_bundle/2.8/hg19/ucsc.hg19.fasta"
-/usr/bin/time --verbose pindel -f $REF -p $TMPDIR/input.pindel.$SGE_TASK_ID.txt -x 9 -T 5 -j $TMPDIR/$BED --report_interchromosomal_events -o "$TMPDIR/output_targe
-ted.$SGE_TASK_ID.$SAMP_ID"
+echo "Running pindel using referance genome $REF on input $TMPDIR/input.pindel.$SGE_TASK_ID.txt, output saved to $TMPDIR/output"
+/usr/bin/time --verbose pindel -f $REF -p $TMPDIR/input.pindel.$SGE_TASK_ID.txt -x 9 -T 5 -j $TMPDIR/$BED --report_interchromosomal_events -o $TMPDIR/output.$SGE_TASK_ID.$SAMP_ID
 
 echo "Check files before copying output to Luster"
 ls -lh
 
 echo "Copying output.* back to $DEST"
-/usr/bin/time --verbose cp -vR $TMPDIR/output_targeted.$SGE_TASK_ID.* $DEST
+/usr/bin/time --verbose cp -vR $TMPDIR/output.$SGE_TASK_ID.* $DEST
 
 cd $DEST
 
