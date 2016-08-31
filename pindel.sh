@@ -5,7 +5,7 @@
 #$ -l h_vmem=38G
 
 # Matthew Bashton 2016
-# Script for running pindel on the cluster as a SGE array.
+# Script for running pindel on the cluster as an SGE task array.
 
 set -o pipefail
 hostname
