@@ -20,13 +20,13 @@ G_NAME="RUN"
 REF="/opt/databases/GATK_bundle/2.8/hg19/ucsc.hg19.fasta"
 
 LIST="config.txt"
-LINE=`awk "NR==$SGE_TASK_ID" $LIST`
+LINE=$(awk "NR==$SGE_TASK_ID" $LIST)
 set $LINE
 BAM=$1
 INSERT_SIZE=$2
 SAMP_ID=$3
 
-B_NAME=`basename $BAM .bam`
+B_NAME=$(basename $BAM .bam)
 
 echo "** Variables **"
 echo " - BASE_DIR = $BASE_DIR"
