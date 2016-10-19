@@ -6,6 +6,8 @@
 
 # Matthew Bashton 2016
 # Script for running pindel on the cluster as an SGE task array.
+# Needs a config.txt file, which has: 
+# <BAM file name>\t<mean expected insert size>\t<sample ID>
 
 set -o pipefail
 hostname
@@ -15,9 +17,11 @@ module add compilers/gnu/4.9.3
 module add apps/htslib/1.3.1
 
 DEST=$PWD
-BED="regions.bed"
+BED="../Kit_regions_covered.bed"
 G_NAME="RUN"
+# Genome reference
 REF="/opt/databases/GATK_bundle/2.8/hg19/ucsc.hg19.fasta"
+#REF="/opt/databases/GATK_bundle/2.8/b37/human_g1k_v37_decoy.fasta"
 
 LIST="config.txt"
 LINE=$(awk "NR==$SGE_TASK_ID" $LIST)
